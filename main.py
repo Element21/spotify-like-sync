@@ -1,8 +1,8 @@
+import pylast
 import spotipy
-from spotipy.oauth2 import SpotifyOAuth
 from InquirerPy import inquirer
 from InquirerPy.validator import EmptyInputValidator
-import pylast
+from spotipy.oauth2 import SpotifyOAuth
 
 spotify_client_id = inquirer.text(message="Spotify client id:").execute()
 spotify_client_secret = inquirer.text(message="Spotify client secret:").execute()
@@ -15,7 +15,7 @@ lfm = pylast.LastFMNetwork(
     api_key=lastfm_client_id,
     api_secret=lastfm_client_secret,
     username=lastfm_username,
-    password_hash=pylast.md5(lastfm_password),
+    password_hash=lastfm_password,
 )
 
 sp = spotipy.Spotify(
