@@ -4,15 +4,12 @@ from InquirerPy import inquirer
 from InquirerPy.validator import EmptyInputValidator
 import pylast
 
-dbg = True
-
-if not dbg:
-    spotify_client_id = inquirer.text(message="Spotify client id:").execute()
-    spotify_client_secret = inquirer.text(message="Spotify client secret:").execute()
-    lastfm_client_id = inquirer.text(message="Last.fm client id:").execute()
-    lastfm_client_secret = inquirer.text(message="Last.fm client secret:").execute()
-    lastfm_username = inquirer.text(message="Last.fm username:").execute()
-    lastfm_password = pylast.md5(inquirer.text(message="Last.fm password:").execute())
+spotify_client_id = inquirer.text(message="Spotify client id:").execute()
+spotify_client_secret = inquirer.text(message="Spotify client secret:").execute()
+lastfm_client_id = inquirer.text(message="Last.fm client id:").execute()
+lastfm_client_secret = inquirer.text(message="Last.fm client secret:").execute()
+lastfm_username = inquirer.text(message="Last.fm username:").execute()
+lastfm_password = pylast.md5(inquirer.text(message="Last.fm password:").execute())
 
 lfm = pylast.LastFMNetwork(
     api_key=lastfm_client_id,
