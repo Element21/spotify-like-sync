@@ -4,10 +4,10 @@ from InquirerPy import inquirer
 from InquirerPy.validator import EmptyInputValidator
 from spotipy.oauth2 import SpotifyOAuth
 
-spotify_client_id = inquirer.text(message="Spotify client id:").execute()
+spotify_client_id = inquirer.text(message="Spotify client ID:").execute()
 spotify_client_secret = inquirer.text(message="Spotify client secret:").execute()
-lastfm_client_id = inquirer.text(message="Last.fm client id:").execute()
-lastfm_client_secret = inquirer.text(message="Last.fm client secret:").execute()
+lastfm_client_id = inquirer.text(message="Last.fm API key:").execute()
+lastfm_client_secret = inquirer.text(message="Last.fm shared secret:").execute()
 lastfm_username = inquirer.text(message="Last.fm username:").execute()
 lastfm_password = pylast.md5(inquirer.text(message="Last.fm password:").execute())
 
