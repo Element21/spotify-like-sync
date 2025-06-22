@@ -33,41 +33,52 @@ liked_songs = {"artist": [], "track": [], "length": 0}
 def get_user_liked_songs(
     spotifyApiClient=sp,
     output_dict=liked_songs,
-    limit=1,
-    offset=0,  # User will somtimes have an odd number of liked songs, so we can only request 1 at a time so we dont go over the playlist length
+    limit=50,  # Max 50: https://developer.spotify.com/documentation/web-api/reference/get-users-saved-tracks
 ):
     "Returns a dictionary with keys (artist, track) of a spotify users liked songs"
-    current_user_saved_tracks = spotifyApiClient.current_user_saved_tracks(
-        limit=limit, offset=offset
-    )
-    current_user_saved_tracks_len = current_user_saved_tracks["total"]
-    output_dict["length"] = current_user_saved_tracks_len
+    offset = 0
+    while True:
+        current_user_saved_tracks = spotifyApiClient.current_user_saved_tracks(
+            limit=limit, offset=offset
+        )
+        current_user_saved_tracks_len = current_user_saved_tracks["total"]
+        output_dict["length"] = current_user_saved_tracks_len
 
-    while offset <= current_user_saved_tracks_len:
+        if not current_user_saved_tracks["items"]:
+            break  # No more songs
+
         for item in current_user_saved_tracks["items"]:
             track = item["track"]
             output_dict["artist"].append(track["artists"][0]["name"])
             output_dict["track"].append(track["name"])
-        print(
-            f"Spotify: {offset}/{current_user_saved_tracks_len}, {round((offset / current_user_saved_tracks_len)*100, 2)}%"
+
+        processed_count = len(output_dict["artist"])
+        percentage = (
+            round((processed_count / current_user_saved_tracks_len) * 100, 2)
+            if current_user_saved_tracks_len > 0
+            else None
         )
+        print(
+            f"Spotify: {processed_count}/{current_user_saved_tracks_len}, {percentage}%"
+        )
+
         offset += limit
-        return get_user_liked_songs(
-            spotifyApiClient=sp, output_dict=liked_songs, limit=limit, offset=offset
-        )  # Recurse until we have the whole like songs playlist
+
     return output_dict
 
 
 spotify_liked = get_user_liked_songs()
 
-lastfm_track = 0
-
 # Like all songs in spotify playlist on last.fm
 for idx, spotify_artist in enumerate(spotify_liked["artist"]):
     spotify_track = spotify_liked["track"][idx]
-    track = lfm.get_track(artist=spotify_artist, title=spotify_track)
-    track.love()
-    print(
-        f"Last.fm: {lastfm_track + 1}/{spotify_liked['length']}, {round((lastfm_track + 1 / spotify_liked['length'])*100, 2)}%"
-    )
-    lastfm_track += 1
+    try:
+        track = lfm.get_track(artist=spotify_artist, title=spotify_track)
+        track.love()
+        print(
+            f"Last.fm: {idx + 1}/{spotify_liked['length']}, {round(((idx + 1) / spotify_liked['length']) * 100, 2)}%"
+        )
+    except pylast.WSError as e:
+        print(
+            f"Could not find '{spotify_track}' by '{spotify_artist}' on Last.fm. Skipping. Error: {e}"
+        )
