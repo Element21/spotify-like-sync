@@ -23,7 +23,7 @@ sp = spotipy.Spotify(
         scope="user-library-read",
         client_id=spotify_client_id,
         client_secret=spotify_client_secret,
-        redirect_uri="http://localhost:1337",
+        redirect_uri="http://127.0.0.1:1337",
     )
 )
 
